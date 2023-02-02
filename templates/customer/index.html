@@ -1,0 +1,99 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+{% include 'navbar.html' %}
+{% include '_messages.html' %}
+
+
+<script>
+
+    async function deleteProductWorkFlow(product_id) {
+        const delete_href = "{{url_for('deleteproduct',id='REPLACE')}}".replace("REPLACE", product_id)
+        //"/deleteproduct/" + product_id
+        // "/customer/product/delete/" + product_id
+        walletWrapper.setupContract(contract_abi, contract_address)
+        console.log(delete_href)
+        console.log("after get contract")
+        account = await walletWrapper.retrieveAccountInfo()
+        console.log("Your account is " + account);
+        await walletWrapper.deleteProduct(
+            product_id,
+            {
+                from: account
+                //gas: 6721975
+            })
+        console.log("DeleteProduct Done")
+        window.location.replace(delete_href)
+    }
+
+    function deleteProduct(product_id) {
+
+        deleteProductWorkFlow(product_id)
+            .catch(error => {
+                console.log(error)
+            })
+    }
+
+    const contract_address = "{{contract_info['address']}}";
+    const contract_abi = {{ contract_info['abi'] | tojson }}
+
+</script>
+<div class="container">
+    <table class="table table-sm table-condensed table-striped table-hover">
+        <thead>
+            <th>ID</th>
+            <th>Address</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Discount %</th>
+            <th>Stock</th>
+            <th>Brand</th>
+            <th>Category</th>
+            <th>NFT</th>
+            <th>Image</th>
+            <th>Shipping</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </thead>
+        <tbody>
+            {% for i in range(products|length)%}
+           
+            <tr>
+                <td>{{loop.index}}</td>
+                <td>{{hidden_addresses[i]}}</td>
+                <td><a href="{{url_for('get_product',id=products[i].product_id)}}" class="btn btn-sm btn-info" method="GET"
+                        type="submit" style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">{{products[i].name}}</a>
+                </td>
+                <td class="trailing">ETH {{"%.8f"|format(products[i].price)}}</td>
+                <td>-{{products[i].discount}}%</td>
+                <td>{{products[i].stock}}</td>
+                <td>{{products[i].brand.name}}</td>
+                <td>{{products[i].category.name}}</td>
+                <td>
+                    {% if products[i].is_nft %}
+                    {{products[i].is_nft}}
+                    {% endif %}
+
+                </td>
+                <td><img src="{{url_for('static', filename='images/' + products[i].image_1)}}" width="35" height="40"></td>
+                <td><a href="{{url_for('order_info', product_id=products[i].product_id)}}" class="btn btn-sm btn-success"
+                        style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Shipping</a></td>
+                <td><a href="{{url_for('updateproduct', id=products[i].product_id)}}" class="btn btn-sm btn-info"
+                        style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Edit</a></td>
+
+
+                <td><button type="button" class="btn btn-sm btn-danger"
+                        style="box-shadow: 0px 3px 3px rgb(107, 107, 107);"
+                        onclick="deleteProduct('{{products[i].product_id | string}}')">Delete
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% include 'footer.html' %}
+
+{% endblock content %}

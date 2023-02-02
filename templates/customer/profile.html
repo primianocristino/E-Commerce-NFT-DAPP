@@ -1,0 +1,127 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+{% include 'navbar.html' %}
+{% include '_messages.html' %}
+
+<script>
+
+    const contract_abi = {{ contract_info['abi'] | tojson}};
+    const contract_address = "{{contract_info['address']}}";
+
+    const token_abi = {{ token_info['abi'] | tojson}};
+    const token_address = "{{token_info['address']}}";
+
+    balanceOf()
+
+</script>
+<div class="container">
+    <table class="table table-sm table-condensed table-striped table-hover">
+        <thead>
+            <!--
+
+        -->
+
+        </thead>
+        <tbody>
+
+            <tr>
+                <td>
+                    {% set filename = "" %}
+                    {% if user_data.profile %}
+                    {% set filename = user_data.profile.replace("\\","/") %}
+                    {% endif %}
+
+                    <table style="margin-left: 33%;margin-right: 0%; margin-top: 5%;">
+                        <tr>
+                            <td colspan="2" style="text-align: center;">
+                                <img style="float:center; text-shadow: 0px 1px 2px rgb(110, 110, 110);"
+                                    src="{{url_for('static', filename='images/' + filename)}}" width="200" height="200">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a href="{{url_for('customer_update')}}" class="btn btn-info btn-sm"
+                                    style="float:right; margin-top: 7px;  margin-right: 1%;  box-shadow: 0px 3px 3px rgb(107, 107, 107);">Edit</a>
+                            </td>
+                            <td>
+                                <a id="delete_user" name="delete_user" href="" class="btn btn-danger btn-sm"
+                                    style="float:left; margin-top: 7px;  margin-left: 1%;  box-shadow: 0px 3px 3px rgb(107, 107, 107);">Delete</a>
+
+                                <script>
+                                    document.getElementById("delete_user").addEventListener("click", event => {
+                                        if (confirm("Are you sure you wanna delete your account? Even if you do that, you will still have your items.")) {
+                                            $("#delete_user").attr("href", "{{url_for('customer_delete')}}")
+                                            $("#delete_user").click()
+                                        }
+
+                                    })
+                                </script>
+                            </td>
+                        </tr>
+                    </table>
+
+
+                </td>
+
+                <td>
+                    <h4 class="trailing" id="balance" name="balance" style="color: rgb(82, 95, 82); margin-left: 20%; margin-top: 5%;
+                 text-shadow: 0px 1px 2px rgb(110, 110, 110);"></h4>
+                    <!--<form id="depositbutton" name="depositbutton" action="" method="POST" enctype="multipart/form-data"> -->
+                    <input class="form-control" id="amount" min="0" name="amount" placeholder="0" required="" step="any"
+                        type="number" value="0">
+                    <br><br>
+
+                    <button type="button" class="btn btn-sm btn-info"
+                        style="box-shadow: 0px 3px 3px rgb(107, 107, 107);" onclick="deposit()">
+                        Deposit
+                    </button>
+                    &nbsp;&nbsp;
+                    <button type="button" class="btn btn-sm btn-success"
+                        style="box-shadow: 0px 3px 3px rgb(107, 107, 107);" onclick="withdraw()">
+                        Withdraw
+                    </button>
+
+                    <!--</form>-->
+
+                </td>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>{{user_data.name}}</td>
+            </tr>
+            <tr>
+                <td>Username</td>
+                <td>{{user_data.username}}</td>
+            </tr>
+            <tr>
+                <td>Email</td>
+                <td>{{user_data.email}}</td>
+            </tr>
+            <tr>
+                <td>Country</td>
+                <td>{{user_data.country}}</td>
+            </tr>
+            <tr>
+                <td>City</td>
+                <td>{{user_data.city}}</td>
+            </tr>
+            <tr>
+                <td>Contact</td>
+                <td>{{user_data.contact}}</td>
+            </tr>
+            <tr>
+                <td>Address</td>
+                <td>{{user_data.address}}</td>
+            </tr>
+            <tr>
+                <td>ZipCode</td>
+                <td>{{user_data.zipcode}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% include 'footer.html' %}
+
+{% endblock content %}

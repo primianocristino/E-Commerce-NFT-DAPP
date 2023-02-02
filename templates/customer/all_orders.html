@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+{% include 'navbar.html' %}
+{% include '_messages.html' %}
+
+
+<div class="container">
+    <table class="table table-sm table-condensed table-striped table-hover">
+        <thead>
+            <th>ID</th>
+            <th>Order</th>
+            <th>Products</th>
+            <th>Date</th>
+
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{loop.index}}</td>
+                <!--<td>{{order.invoice}}</td>-->
+                <td><a href="{{url_for('orders',invoice=order.invoice)}}" class="btn btn-sm btn-info" method="GET"
+                        type="submit" style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">{{order.invoice}}</a></td>
+
+                <td>
+                    {% for i in range([3,order.orders.keys()|length]|min) %}
+
+                    {% set image= (order.orders.values()|list)[i]['image_1'] %}
+
+                    <img src="{{url_for('static', filename='images/' +image) }}" width="35" height="40">
+
+                    {% endfor %}
+                </td>
+
+
+                <td>{{(order.date_created|string).split(".")[0]}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include 'footer.html' %}
+
+{% endblock content %}

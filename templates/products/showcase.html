@@ -1,0 +1,182 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+{% include '_messages.html' %}
+
+
+<script>
+
+    async function getNFTWorkFlow(product_id) {
+        walletWrapper.setupContract(contract_abi, contract_address)
+        const account = await walletWrapper.retrieveAccountInfo()
+
+        window.location = await walletWrapper.getURI(
+            product_id,
+            {
+                from: account
+            }
+        )
+
+    }
+
+    function getNFT(product_id) {
+
+        getNFTWorkFlow(product_id)
+            .catch(error => {
+                message = getMetamaskError(error.message)
+
+                $("#flashbox").attr("class", "alert alert-danger")
+                $("#flashbox").text(message)
+                window.scrollTo(0, 0)
+            })
+    }
+
+    function image_link(id) {
+        window.location = "{{url_for('get_product', id='REPLACE')}}".replace("REPLACE", "" + id)
+    }
+
+    const contract_abi = {{ contract_info['abi'] | tojson }}
+    const contract_address = "{{contract_info['address']}}";
+</script>
+
+<!-- SEARCH BAR -->
+<div class="container" style="margin-top: 15px;">
+    <!-- ALL PRODUCTS-->
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-3 mt-3">
+            <div class="card" style="box-shadow: 0px 3px 3px rgb(152, 152, 152);  max-height: 500px;">
+                {% if product.is_nft %}
+                <h4 class="text-center" style="text-align: center; margin-left: 17.5%; margin-top: 5px;">
+                    {{product.name}}
+
+                    <img class="img_link" src="{{url_for('static', filename='images/site-images/nft.png')}}"
+                        alt="Clear Cart" width='12.5%' height='12.5%'
+                        style="float:right; margin-right: 5%; margin-top: 0%;"
+                        onclick="getNFT('{{product.product_id}}')">
+
+                </h4>
+                {% else %}
+                <h4 class="text-center" style="text-align: center; margin-left: 0%; margin-top: 5px;">
+                    {{product.name}}
+                </h4>
+                {% endif %}
+
+                <img class="img_link" src="{{url_for('static', filename='images/' + product.image_1)}}"
+                    style=" height: 140px;" style="margin-top: 10px;" onclick="image_link('{{product.product_id}}')">
+
+                <!--<img src="{{url_for('static', filename='images/' + product.image_1)}}" style=" height: 140px;"
+                    style="margin-top: 10px;">-->
+                <div class="card-body">
+
+
+
+                    <!--{% if product.discount > 0 %}
+                    <p class="text-center"
+                        style="text-shadow: 1px 1px 1px grey; color: red; font-weight: bold; margin-bottom: 5px; font-size: 25px;">
+                        -{{product.discount}}%</p>
+                    {% endif %}
+                    <h5 class="trailing" class="text-center"
+                        style="text-shadow: 0px 1px 1px rgb(109, 109, 109); font-size: 150%; margin-bottom: 75px; z-index: -1;">
+                        ETH {{"%.8f"|format(product.price)}}</h5>-->
+
+
+
+                </div>
+                <div class="card-footer" style="min-height: 60px;">
+
+
+                    <h5 class="trailing" class="text-center"
+                        style="text-shadow: 0px 1px 1px rgb(109, 109, 109); font-size: 150%; margin-bottom: 5px; z-index: -1;">
+                        ETH {{"%.8f"|format(product.price)}}
+                        {% if product.discount > 0 %}
+                        <a class="text-center"
+                            style="text-shadow: 1px 1px 1px grey; color: red; font-weight: bold; float:right;  font-size: 25px;">
+                            -{{product.discount}}%</a>
+                        {% endif %}
+                    </h5>
+
+                </div>
+                <div class="card-footer" style="min-height: 60px;">
+                    <a href="{{url_for('get_product', id=product.product_id)}}"
+                        class="float-left btn btn-sm btn-primary"
+                        style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Details</a>
+
+                    {% if 'Shoppingcart' in session.keys() and product.product_id|string in
+                    session['Shoppingcart'].keys()
+                    and
+                    product.stock - session['Shoppingcart'][product.product_id|string]['quantity']|int > 0%}
+
+                    <form action="{{url_for('addcart')}}" method="post">
+                        <input type="hidden" name="product_id" value="{{product.product_id}}">
+                        <button type="submit" class="float-right btn btn-sm btn-success"
+                            style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Add Cart</button>
+                        <input type="hidden" name="quantity" id="" value="1" min="1" max="{{product.stock}}">
+                    </form>
+                    {% elif 'Shoppingcart' in session.keys() and product.product_id|string not in
+                    session['Shoppingcart'].keys() %}
+                    <form action="{{url_for('addcart')}}" method="post">
+                        <input type="hidden" name="product_id" value="{{product.product_id}}">
+                        <button type="submit" class="float-right btn btn-sm btn-success"
+                            style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Add Cart</button>
+                        <input type="hidden" name="quantity" id="" value="1" min="1" max="{{product.stock}}">
+                    </form>
+                    {% elif 'Shoppingcart' not in session.keys() %}
+                    <form action="{{url_for('addcart')}}" method="post">
+                        <input type="hidden" name="product_id" value="{{product.product_id}}">
+                        <button type="submit" class="float-right btn btn-sm btn-success"
+                            style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Add Cart</button>
+                        <input type="hidden" name="quantity" id="" value="1" min="1" max="{{product.stock}}">
+                    </form>
+                    {% else %}
+                    <!--<script>alert("{{'Shoppingcart' in session.keys()}}")</script>-->
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!--NUMBER (ALL)-->
+    <div class="row">
+        <div class="col text-center">
+
+            {% if products.has_prev %}
+            <a href="{{url_for(url, q=search, page=products.prev_num)}}" class="btn btn-dark btn-sm mt-4"
+                style=" box-shadow: 0px 3px 3px rgb(152, 152, 152);">Previous</a>
+            {% endif %}
+            {% if products.total > 8 %}
+            {% for page_num in products.iter_pages(left_edge=1,right_edge=2, left_current=1, right_current=2) %}
+            {% if page_num %}
+            {% if products.page == page_num %}
+            <a href="{{url_for(url, q=search, page=page_num)}}" class="btn btn-dark btn-sm mt-4"
+                style="box-shadow: 0px 3px 3px rgb(152, 152, 152);">{{page_num}}</a>
+            {% else %}
+            <a href="{{url_for(url, q=search, page=page_num)}}" class="btn btn-outline-dark btn-sm mt-4"
+                style="box-shadow: 0px 3px 3px rgb(152, 152, 152);">{{page_num}}</a>
+            {% endif %}
+            {% else %}
+            ...
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+            {% if products.has_next %}
+            <a href="{{url_for(url, q=search, page=products.next_num)}}" class="btn btn-dark btn-sm mt-4"
+                style="box-shadow: 0px 3px 3px rgb(152, 152, 152);">Next</a>
+            {% endif %}
+        </div>
+    </div>
+
+
+</div>
+
+
+
+
+
+
+<!--FOOTER-->
+{% include 'footer.html' %}
+
+{% endblock content %}

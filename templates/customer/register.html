@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+{% block content %}
+{% include 'navbar.html' %}
+
+<style>
+    li::marker {
+        content: '';
+        font-size: 1.2em;
+    }
+</style>
+
+<script>
+    const contract_abi = {{ contract_info['abi'] | tojson}};
+    const contract_address = "{{contract_info['address']}}";
+
+    const token_nft_abi = {{ token_nft_info['abi'] | tojson}};
+    const token_nft_address = "{{token_nft_info['address']}}";
+
+</script>
+<div class="container">
+    {% include '_messages.html'%}
+    {% from "_formhelpers.html" import render_field %}
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <h1 class="text-center h1 text-white bg-dark"
+                style="text-shadow: 2px 3px 3px black;
+            font-family:Verdana; height: 55px; border-radius: 5px; margin-top: 5px; box-shadow: 0px 3px 3px rgb(152, 152, 152);">Register</h1>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+    <form action="" method="POST" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-4">
+                {{ render_field(form.name, class='form-control')}}
+                {{ render_field(form.username, class='form-control')}}
+                {{ render_field(form.email, class='form-control')}}
+                {{ render_field(form.password, class='form-control')}}
+                {{ render_field(form.confirm, class='form-control')}}
+                {{ render_field(form.profile, class='form-control', required=False)}}
+            </div>
+            <div class="col-md-4">
+                {{ render_field(form.country, class='form-control')}}
+                {{ render_field(form.city, class='form-control')}}
+                {{ render_field(form.contact, class='form-control')}}
+                {{ render_field(form.address, class='form-control')}}
+                {{ render_field(form.zipcode, class='form-control')}}
+                {{ render_field(form.conditionTerms, class='form-control')}}
+                <p style="font-size:80%;">Allow the application to manage all of your ERC721-NFT.</p>
+                {{ render_field(form.registerAccount, class='form-control')}}
+
+
+                {{ form.submit(id="test", class="btn btn-success") }}
+                <script>
+                    $("#conditionTerms-0").on("click", function () {
+                        if ($("#conditionTerms-0").is(":checked") == true)
+                            conditionTerms()
+                                .then(account => {
+                                    $("#registerAccount").val("" + account)
+                                })
+                                .catch(error => {
+                                    message = getMetamaskError(error.message)
+
+                                    $("#flashbox").attr("class", "alert alert-danger")
+                                    $("#flashbox").text(message)
+                                    window.scrollTo(0, 0)
+                                })
+                    });
+                </script>
+
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </form>
+</div>
+
+
+
+
+
+
+
+
+
+
+{% endblock content %}

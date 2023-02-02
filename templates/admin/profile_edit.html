@@ -1,0 +1,83 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+{% include 'admin/navbar.html' %}
+{% include '_messages.html' %}
+
+<div class="container">
+    {% from "_formhelpers.html" import render_field %}
+
+    <form method="post" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <table class="table table-sm table-condensed table-striped table-hover">
+            <thead>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td>
+                        {% set filename = "" %}
+                        {% if user_data.profile %}
+                        {% set filename = user_data.profile.replace("\\","/") %}
+                        {% endif %}
+
+                        <img id="profile_image" style=" float:center;
+                        text-shadow: 0px 1px 2px rgb(110, 110, 110);"
+                            src="{{url_for('static', filename='images/' + filename)}}">
+                        {{ render_field(form.profile, id="newImage", class='form-control', required=False)}}
+                        <script>
+                            document.getElementById("newImage").addEventListener("change", event => {
+                                const file = event.target.files[0]
+                                reader = new FileReader()
+                                reader.addEventListener("load", eventLoad => {
+                                    document.querySelector("#profile_image").src = eventLoad.target.result
+                                })
+
+                                try {
+                                    reader.readAsDataURL(file)
+                                }
+                                catch (error) {
+                                    global_blob = ""
+                                }
+
+                            })
+                        </script>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>{{ render_field(form.name, class='form-control', value=user_data.name) }}</td>
+                </tr>
+                <tr>
+                    <td>{{ render_field(form.username, class='form-control', value=user_data.username) }}</td>
+                </tr>
+                <tr>
+                    <td>{{ render_field(form.email, class='form-control', value=user_data.email) }}</td>
+                </tr>
+                <tr>
+                    <td>{{ render_field(form.currentpassword, class='form-control', value="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ render_field(form.password , class='form-control', value="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ render_field(form.confirm, class='form-control', value="") }}</td>
+                </tr>
+                <tr>
+                    <td>
+
+                        <input type=submit value='Edit' class="btn btn-success"
+                            style="margin-top: 10px; box-shadow: 0px 0px 8px rgb(102, 102, 102); ">
+
+                        <a href="{{url_for('admin_profile')}}" class="btn btn-danger btn-sm"
+                            style="margin-left: 0%; float:right; box-shadow: 0px 3px 3px rgb(107, 107, 107);">Cancel</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+{% include 'footer.html' %}
+
+{% endblock content %}

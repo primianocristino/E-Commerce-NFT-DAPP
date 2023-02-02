@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="content-language" content="en">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+  <!--<link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.min.css')}}">-->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@alch/alchemy-web3@latest/dist/alchemyWeb3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/md5.js"></script>
+  <script src="{{url_for('static', filename='js/metamaskWrapper.js')}}"></script>
+  <script src="{{url_for('static', filename='js/utils.js')}}"></script>
+
+
+
+  <title>E-commerce.</title>
+</head>
+
+<body>
+  {% block content %}
+
+
+  {% endblock content %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <!--<script src="{{url_for('static', filename='js/popper.min.js')}}"></script>-->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+  <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"></script>-->
+  <!--<script src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>-->
+
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.2/js/umd/util.js"></script>-->
+
+  <script type="text/javascript">
+    function removeTrailing() {
+      for (var i = 0; i < document.getElementsByClassName("trailing").length; i++) {
+        document.getElementsByClassName("trailing")[i].innerHTML = document.getElementsByClassName("trailing")[i].innerHTML.replace(/^0+(\d)|(\d)0+$/gm, '$1$2');
+      }
+      // (/(\.\d*?[1-9])0+$/g, "$1" );
+      // (/^0+(\d)|(\d)0+$/gm, '$1$2');  
+    }
+    removeTrailing()
+  </script>
+</body>
+
+</html>

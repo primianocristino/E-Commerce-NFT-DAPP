@@ -1,0 +1,110 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+{% include 'admin/navbar.html' %}
+{% include '_messages.html' %}
+
+<script>
+    const contract_abi = {{ contract_info['abi'] | tojson}};
+    const contract_address = "{{contract_info['address']}}";
+
+    const token_abi = {{ token_info['abi'] | tojson}};
+    const token_address = "{{token_info['address']}}";
+
+    balanceOf()
+    //remoteBalanceOf()
+    totalSupply()
+    //currentSupply()
+
+</script>
+<div class="container">
+    <table class="table table-sm table-condensed table-striped table-hover">
+        <thead>
+            <!--
+
+        -->
+
+        </thead>
+        <tbody>
+
+            <tr>
+                <td>
+                    {% set filename = user_data.profile.replace("\\","/") %}
+                    <img style=" margin-left: 20%; margin-top: 20%;
+                        text-shadow: 0px 1px 2px rgb(110, 110, 110);"
+                        src="{{url_for('static', filename='images/' + filename)}}" width="70" height="70">
+                    <a href="{{url_for('admin_update')}}" class="btn btn-danger btn-sm"
+                        style="margin-top: 7px;  margin-left: 25%;  box-shadow: 0px 3px 3px rgb(107, 107, 107);">Edit</a>
+                </td>
+
+                <td>
+                    <h4 class="trailing" id="balance" name="balance" style="color: rgb(82, 95, 82); margin-left: 20%;
+                 text-shadow: 0px 1px 2px rgb(110, 110, 110);"></h4>
+                    <h6 class="trailing" id="remoteBalance" name="remoteBalance" style="color: rgb(82, 95, 82); margin-left: 20%;
+                 text-shadow: 0px 1px 2px rgb(110, 110, 110);"></h6>
+                    <!--<form id="depositbutton" name="depositbutton" action="" method="POST" enctype="multipart/form-data"> -->
+                    <input class="form-control" id="amount" min="0" name="amount" placeholder="0" required="" step="any"
+                        type="number" value="0">
+                    <br><br>
+
+                    <button type="button" class="btn btn-sm btn-info"
+                        style="box-shadow: 0px 3px 3px rgb(107, 107, 107);" onclick="deposit()">
+                        Deposit
+                    </button>
+                    &nbsp;&nbsp;
+                    <button type="button" class="btn btn-sm btn-success"
+                        style="box-shadow: 0px 3px 3px rgb(107, 107, 107);" onclick="withdraw()">
+                        Withdraw
+                    </button>
+
+                    <!--</form>-->
+
+                </td>
+
+
+                <td>
+                    <h4 class="trailing" id="supply" name="supply" style="color: rgb(82, 95, 82); margin-left: 20%;
+                 text-shadow: 0px 1px 2px rgb(110, 110, 110);"></h4>
+
+                    <h6 class="trailing" id="currentSupply" name="currentSupply" style="color: rgb(82, 95, 82); margin-left: 20%;
+                 text-shadow: 0px 1px 2px rgb(110, 110, 110);">
+                    </h6>
+                    <!--<form action="" method="POST" enctype="multipart/form-data"> -->
+                    <input class="form-control" id="amount_supply" min="0" name="amount_supply" placeholder="0"
+                        required="" step="any" type="number" value="0">
+                    <br><br>
+
+                    <button type="button" class="btn btn-sm btn-info"
+                        style="box-shadow: 0px 3px 3px rgb(107, 107, 107);" onclick="increaseSupply()">
+                        increase supply
+                    </button>
+                    &nbsp;&nbsp;
+                    <button type="button" class="btn btn-sm btn-success"
+                        style="box-shadow: 0px 3px 3px rgb(107, 107, 107);" onclick="decreaseSupply()">
+                        decrease supply
+                    </button>
+
+                    <!--</form>-->
+
+                </td>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>{{user_data.name}}</td>
+            </tr>
+            <tr>
+                <td>Username</td>
+                <td>{{user_data.username}}</td>
+            </tr>
+            <tr>
+                <td>Email</td>
+                <td>{{user_data.email}}</td>
+            </tr>
+
+        </tbody>
+    </table>
+</div>
+{% include 'footer.html' %}
+
+{% endblock content %}

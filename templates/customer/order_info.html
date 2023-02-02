@@ -1,0 +1,223 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            {% include '_messages.html' %}
+
+            <table class="table table-sm table-hover">
+                <thead>
+                    <th>Product</th>
+                    <th></th>
+                    {% if reference_product.image_2 %}
+                    <th></th>
+                    {% endif %}
+                    {% if reference_product.image_3 %}
+                    <th></th>
+                    {% endif %}
+                    <th>Price</th>
+                    <th>Stock</th>
+                    {% if reference_product.is_nft %}
+                    <th>NFT</th>
+                    {%endif %}
+                    <th>Discount</th>
+                    <th>Final Price</th>
+
+                </thead>
+                <tbody>
+
+
+                    {% set discount = "%0.2f" | format((reference_product.discount/100) * reference_product.price|float)
+                    %}
+
+                    <tr>
+
+                        <td><a href="{{url_for('get_product',id=reference_product.product_id)}}"
+                                class="btn btn-sm btn-info" method="GET" type="submit"
+                                style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">{{reference_product.name}}</a>
+                        </td>
+                        <td><img src="{{url_for('static', filename='images/' + reference_product.image_1)}}" width="35"
+                                height="40">
+                        </td>
+
+                        {% if reference_product.image_2 %}
+                        <td><img src="{{url_for('static', filename='images/' + reference_product.image_2)}}" width="35"
+                                height="40">
+                        </td>
+                        {% endif %}
+                        {% if reference_product.image_3 %}
+                        <td><img src="{{url_for('static', filename='images/' + reference_product.image_3)}}" width="35"
+                                height="40">
+                        </td>
+                        {% endif %}
+
+
+                        <td class="trailing">ETH {{"%.8f"|format(reference_product.price)}}</td>
+                        <td>
+                            {{ reference_product.stock }}
+                        </td>
+
+
+                        {% if reference_product.is_nft %}
+                        <td>
+                            {{ reference_product.is_nft }}
+                        </td>
+                        {%endif %}
+
+
+                        {% if reference_product.discount >= 0 %}
+
+                        <td>-{{reference_product.discount}}%</td>
+
+
+                        {% else %}
+                        <td></td>
+                        {% endif %}
+
+
+                        <td class="trailing">ETH {{"%0.8f"|format((reference_product.price|float) - discount|float)}}
+                        </td>
+
+
+                    </tr>
+                </tbody>
+            </table>
+            <h2 class="text-center h1 text-white bg-dark bg-gradient"
+                style="text-shadow: 2px 3px 3px black;
+                  font-family:Verdana; height: 55px;  margin-top: 5px; border-radius: 3px; box-shadow: 0px 0px 8px rgb(102, 102, 102);">Shipping</h2>
+            {% for i in range(orders|length) %}
+
+            {% set order = orders[i]['order'] %}
+            {% set customer = orders[i]['customer'] %}
+            {% set product = orders[i]['product'] %}
+
+
+            <br>
+            <br>
+            <br>
+
+            <table class="table table-sm table-hover">
+                <thead>
+                    <th>Customer</th>
+                    <th>Email</th>
+                    <th>Contact</th>
+                    <th>Country</th>
+                    <th>City</th>
+                    <th>Address</th>
+                    <th>Zipcode</th>
+
+                </thead>
+                <tbody>
+
+                    <tr>
+
+                        <td>
+                            {{ customer.name }}
+                        </td>
+                        <td>
+                            {{ customer.email }}
+                        </td>
+                        <td>
+                            {{ customer.contact }}
+                        </td>
+                        <td>
+                            {{ customer.country }}
+                        </td>
+                        <td>
+                            {{ customer.city }}
+                        </td>
+                        <td>
+                            {{ customer.address }}
+                        </td>
+                        <td>
+                            {{ customer.zipcode }}
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-sm table-hover">
+                <thead>
+                    <th>Product</th>
+                    <th>Image</th>
+                    <th>Price</th>
+                    <th>Qnt</th>
+                    <th>NFT</th>
+                    <th>Discount</th>
+                    <th>Final Price</th>
+                    <th>Status</th>
+
+                </thead>
+                <tbody>
+
+
+                    {% set discount = "%0.2f" | format((product.discount/100) * product.price|float) %}
+
+                    <tr>
+
+                        <td><a href="{{url_for('get_product',id=product.product_id)}}" class="btn btn-sm btn-info"
+                                method="GET" type="submit"
+                                style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">{{product.name}}</a>
+                        </td>
+                        <td><img src="{{url_for('static', filename='images/' + product.image_1)}}" width="35"
+                                height="40">
+                        </td>
+
+                        <td class="trailing">ETH {{"%.8f"|format(product.price)}}</td>
+                        <td>
+                            {{ product.quantity }}
+                        </td>
+                        {% if product.is_nft %}
+                        <td>
+                            {{ product.is_nft }}
+                        </td>
+                        {% endif %}
+
+                        {% if product.discount >= 0 %}
+
+                        <td>-{{product.discount}}%</td>
+
+
+                        {% else %}
+                        <td></td>
+                        {% endif %}
+
+
+                        <td class="trailing">ETH {{"%0.8f"|format((product.price|float) - discount|float)}}</td>
+                        <td>
+
+                            <form id="status_form_{{order.invoice}}"
+                                action="{{url_for('update_product_status', id=order.invoice)}}" method="post">
+
+
+                                <input type="hidden" name="product" id="product" value="{{product.product_id}}">
+                                <select name="status" id="status" class="form-control" required
+                                    onchange="this.form.submit()">
+                                    <option value="{{product.status}}" selected>{{product.status}}</option>
+                                    {% for status in possible_status %}
+                                    {% if status != product.status %}
+                                    <option value="{{status}}">{{status}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </form>
+
+                        </td>
+
+
+                    </tr>
+                </tbody>
+            </table>
+
+
+
+            {% endfor %}
+
+
+        </div>
+    </div>
+</div>
+{% include 'footer.html' %}
+
+{% endblock content %}

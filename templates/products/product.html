@@ -1,0 +1,170 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+{% include '_messages.html' %}
+
+
+<script>
+    async function getNFTWorkFlow() {
+        walletWrapper.setupContract(contract_abi, contract_address)
+        const account = await walletWrapper.retrieveAccountInfo()
+
+        window.location = await walletWrapper.getURI(
+            product_id,
+            {
+                from: account
+            }
+        )
+
+    }
+
+    function getNFT() {
+
+        getNFTWorkFlow()
+            .catch(error => {
+                message = getMetamaskError(error.message)
+
+                $("#flashbox").attr("class", "alert alert-danger")
+                $("#flashbox").text(message)
+                window.scrollTo(0, 0)
+            })
+    }
+
+
+
+
+    const product_id = "{{ product.product_id| string}}"
+    const contract_abi = {{ contract_info['abi'] | tojson }}
+    const contract_address = "{{contract_info['address']}}";
+</script>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6" id="b_image">
+
+
+
+            <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    {% set control = [] %}
+                    {% for i in range(3) %}
+
+                    {% if product["image_"+((i+1)|string)] %}
+                    {% if control|length > 0 %}
+                    <li data-target="#carouselExampleFade" data-slide-to="{{i|string}}"></li>
+                    {% else %}
+                    <li data-target="#carouselExampleFade" data-slide-to="{{i|string}}" class="active"></li>
+                    {% if control.append(0) %}{% endif %}
+                    {% endif %}
+
+                    {% endif %}
+
+                    {% endfor %}
+
+                </ol>
+                <div class="carousel-inner">
+
+                    {% set control = [] %}
+                    {% for i in range(1,4) %}
+
+                    {% if product["image_"+(i|string)] %}
+                    {% if control|length > 0 %}
+                    <div class="carousel-item">
+                        {% else %}
+                        <div class="carousel-item active">
+                            {% if control.append(0) %}{% endif %}
+                            {% endif %}
+
+                            <img src="{{url_for('static', filename='images/' +product['image_'+(i|string)] )}}"
+                                class="d-block w-100" alt="..." style=" max-width: 100%; height: 300px;">
+                        </div>
+
+                        {% endif %}
+
+
+                        {% endfor %}
+
+                    </div>
+
+                    <a class="carousel-control-prev" href="#carouselExampleFade" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselExampleFade" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+
+
+
+
+            </div>
+            <div class="col-md-6">
+                <h1 style="text-shadow: 1px 2px 2px rgb(173, 173, 173); font-size: 40px; ">{{ product.name }}
+                    {% if product.is_nft %}
+                    <img class="img_link" id="nft_click" name="nft_click"
+                        src="{{url_for('static', filename='images/site-images/nft.png')}}" alt="nft" width='10%'
+                        height='10%' style="margin-left: 0%; margin-top: 0%;" onclick="getNFT()">
+
+                    {% endif %}
+                </h1>
+
+                <hr>
+                <h4 style="font-style: bold; font-size: 35px; text-shadow: 0px 2px 2px rgb(150, 150, 150);">ETH
+                    {{"%.8f"|format(product.price)}}</h4>
+                {% if product.discount > 0 %}
+                <h3 class='text-center'
+                    style="color: rgb(255, 255, 255); font-style: bold; font-size: 150%; background-color: red;  
+            border-radius: 15px; max-width: 130px; max-height: 180px; text-shadow: 2px 2px 2px rgb(0, 0, 0); box-shadow: 0px 3px 3px rgb(107, 107, 107);">
+                    -{{product.discount}}% OFF</h3>
+                <!--<hr>
+            <br>-->
+                {% endif %}
+
+
+                {% if 'Shoppingcart' in session.keys() and product.product_id|string in session['Shoppingcart'].keys()
+                and
+                product.stock - session['Shoppingcart'][product.product_id|string]['quantity']|int > 0%}
+                <form action="{{url_for('addcart')}}" method="POST">
+                    <input type="hidden" name="product_id" value="{{product.product_id}}">
+                    <button type="submit" class="btn btn-sm btn-success"
+                        style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Add Cart</button>
+                    <label for="">Quantity</label>
+                    <input type="number" name="quantity" id="" value="1" min="1"
+                        max="{{ (product.stock - session['Shoppingcart'][product.product_id|string]['quantity']|int)|string}}">
+                </form>
+                {% elif 'Shoppingcart' in session.keys() and product.product_id|string not in
+                session['Shoppingcart'].keys()
+                %}
+                <form action="{{url_for('addcart')}}" method="POST">
+                    <input type="hidden" name="product_id" value="{{product.product_id}}">
+                    <button type="submit" class="btn btn-sm btn-success"
+                        style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Add Cart</button>
+                    <label for="">Quantity</label>
+                    <input type="number" name="quantity" id="" value="1" min="1" max="{{product.stock}}">
+                </form>
+                {% elif 'Shoppingcart' not in session.keys() %}
+                <form action="{{url_for('addcart')}}" method="POST">
+                    <input type="hidden" name="product_id" value="{{product.product_id}}">
+                    <button type="submit" class="btn btn-sm btn-success"
+                        style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Add Cart</button>
+                    <label for="">Quantity</label>
+                    <input type="number" name="quantity" id="" value="1" min="1" max="{{product.stock}}">
+                </form>
+                {% else %}
+                <!--<script>alert("{{'Shoppingcart' in session.keys()}}")</script>-->
+                {% endif %}
+                <hr>
+
+                <h1 style="text-shadow: 0px 2px 2px rgb(173, 173, 173); font-size: 25px; ">Description</h1>
+                <p>{{ product.desc }}</p>
+
+            </div>
+        </div>
+
+
+    </div>
+
+    <!--FOOTER-->
+    {% include 'footer.html' %}
+    {% endblock content %}

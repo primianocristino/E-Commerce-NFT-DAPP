@@ -1,0 +1,169 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+
+
+<script>
+    async function buyProductsWorkFlow() {
+        const product_ids = [];
+        const product_amounts = [];
+        var i = 0;
+
+        Object.entries(products).forEach(([id, product]) => {
+            product_ids[i] = id
+            product_amounts[i] = product["quantity"]
+            i++
+        })
+
+        walletWrapper.setupContract(contract_abi, contract_address)
+        walletWrapper.setupToken(token_abi, token_address)
+        console.log("after get contract")
+
+        const account = await walletWrapper.retrieveAccountInfo()
+        console.log("Your account is " + account)
+
+        await walletWrapper.buyProducts(
+            product_ids,
+            product_amounts,
+            {
+                from: account
+                //gas: 6721975
+            })
+        console.log("buyProducts Done")
+        window.location.replace(order_href)
+    }
+    function buyProducts() {
+
+        buyProductsWorkFlow()
+            .catch(error => {
+                message = getMetamaskError(error.message)
+
+                $("#flashbox").attr("class", "alert alert-danger")
+                $("#flashbox").text(message)
+                window.scrollTo(0, 0)
+            })
+    }
+
+    const order_href = "{{url_for('getorder')}}"
+
+    const contract_abi = {{ contract_info['abi'] | tojson }}
+    const contract_address = "{{contract_info['address']}}";
+
+    const token_abi = {{ token_info['abi'] | tojson}}
+    const token_address = "{{token_info['address']}}";
+
+    const products = {{ products | tojson }}
+</script>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            {% include '_messages.html' %}
+            <table class="table table-sm table-hover">
+                <thead>
+                    <th>ID</th>
+                    <th>Product</th>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Qnt</th>
+                    <th>NFT</th>
+                    <th>-%</th>
+                    <th>Discount</th>
+                    <th>Subtotal</th>
+                    <!--<th>Update</th>-->
+                    <th>Delete</th>
+                </thead>
+                <tbody>
+
+                    {% for key, product in products.items() %}
+
+                    {% set discount = "%0.2f" | format((product.discount/100) * product.price|float) %}
+
+                    <tr>
+
+                        <td>{{loop.index}}</td>
+                        <td><a href="{{url_for('get_product',id=product.product_id)}}" class="btn btn-sm btn-info"
+                                method="GET" type="submit"
+                                style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">{{product.name}}</a>
+                        </td>
+                        <td>
+                            <img src="{{url_for('static', filename='images/' + product.image_1)}}"
+                                alt="{{product.name}}" width="50" height="45">
+                        </td>
+                        <td><a href="{{url_for('home')}}" style="color: black;">{{product.name}}</a></td>
+
+
+
+                        <td class="trailing">ETH {{"%.8f"|format(product.price)}}</td>
+
+                        <form id="cart_form" action="{{url_for('updatecart', code=key)}}" method="post">
+                            <td>
+
+                                <input type="number" name='quantity' min='1' max='{{product.stock}}'
+                                    value="{{product.quantity}}" onchange="this.form.submit()">
+                            </td>
+                        </form>
+
+
+                        <td>
+                            {% if product.is_nft %}
+                            {{product.is_nft}}
+                            {% endif %}
+
+                        </td>
+                        {% if product.discount >= 0 %}
+
+                        <td>-{{product.discount}}%</td>
+                        <td class="trailing">-ETH {{discount}}</td>
+
+                        {% else %}
+                        <td></td>
+                        {% endif %}
+
+                        {% set subtotal = product.quantity|int * product.price|float %}
+
+                        <td class="trailing">ETH {{"%.8f"|format((subtotal|float) - discount|float)}}</td>
+                        <!--<td>
+                                <button type='submit' class="btn btn-sm btn-info"
+                                    style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Update</button>
+                            </td>-->
+
+                        <td><a href="{{url_for('deleteitem', id=key)}}" class="btn btn-sm btn-danger" method="POST"
+                                type="submit" class="btn btn-sm btn-info"
+                                style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Remove</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table class="table table-sm">
+                <tr>
+                    <!--<td><a href="{{url_for('getorder')}}" class="btn btn-sm btn-info"
+                            style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Order now.</a></td>-->
+
+                    <td><button type="button" class="btn btn-sm btn-success"
+                            style="box-shadow: 0px 3px 3px rgb(107, 107, 107);" onclick="buyProducts()">
+                            Order now.
+                        </button>
+                    </td>
+
+
+
+                    <td width="30%"></td>
+
+                    <td colspan="3">
+                        <h4 class="trailing" style="color: rgb(82, 95, 82); margin-left: 20%;
+                 text-shadow: 0px 1px 2px rgb(110, 110, 110);">Total: ETH {{"%.8f"|format(total)}}</h4>
+                    </td>
+                    <td> <a href="{{url_for('clearcart')}}" class="btn btn-danger btn-sm float-rigth"
+                            style="margin-left: 20%; box-shadow: 0px 3px 3px rgb(107, 107, 107);">Clear Cart</a></td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+{% include 'footer.html' %}
+
+{% endblock content %}

@@ -1,0 +1,57 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+
+{% include 'admin/navbar.html' %}
+{% include '_messages.html' %}
+
+<div class="container">
+    <table class="table table-sm table-condensed table-striped table-hover">
+        <thead>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </thead>
+        <tbody>
+
+            {% if brands %}
+
+            {% for brand in brands %}
+
+            <tr>
+                <td>{{loop.index}}</td>
+                <td>{{brand.name}}</td>
+                <td><a href="{{url_for('updatebrand', id=brand.id)}}" class="btn btn-sm btn-info"
+                        style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Edit</a></td>
+                <td><a href="{{url_for('deletebrand', id=brand.id)}}" class="btn btn-danger btn-sm" method="POST"
+                        type="submit" style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Delete</a></td>
+            </tr>
+
+            {% endfor %}
+
+
+            {% else %}
+
+            {% for category in categories %}
+            <tr>
+                <td>{{loop.index}}</td>
+                <td>{{category.name}}</td>
+                <td><a href="{{url_for('updatecat', id=category.id)}}" class="btn btn-sm btn-info"
+                        style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Edit</a></td>
+                <td><a href="{{url_for('deletecat', id=category.id)}}" class="btn btn-sm btn-danger" method="POST"
+                        type="submit" style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Delete</a></td>
+            </tr>
+            {% endfor %}
+
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+
+{% include 'footer.html' %}
+
+
+{% endblock content %}

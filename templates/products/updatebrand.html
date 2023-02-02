@@ -1,0 +1,46 @@
+{% extends 'layout.html'%}
+
+{% block content %}
+
+{% include 'admin/navbar.html' %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+
+            {% include '_messages.html'%}
+
+            {% if updatebrand %}
+
+            <h1 class="text-center h1 text-white bg-dark bg-gradient" style=" text-shadow: 2px 3px 3px black;font-family:Verdana; height: 55px; border-radius: 5px; 
+            margin-top: 5px; margin-left: 5%;width: 70%; height: 50%;">Add a brand</h1>
+            <form action="" method="POST">
+                <input type="text" name="brand" id="form-control" value="{{updatebrand.name}}"
+                    style=" margin-left: 8% ;height: 37px; margin-top: 20px;">
+                <input type="submit" name="Update brand" id="btn btn-info mt-2" class="btn btn-outline-success"
+                    style="margin-bottom: 5px;">
+                <a href="{{url_for('brands')}}" class="btn btn-outline-danger" style="margin-bottom: 5px;">Cancel</a>
+            </form>
+            {% else %}
+
+            <h1 class="text-center h1 text-white bg-dark bg-gradient"
+                style=" text-shadow: 2px 3px 3px black;font-family:Verdana; height: 55px; border-radius: 5px; margin-top: 5px; width: 400px;">
+                Add a category</h1>
+            <form action="" method="POST">
+                <input type="text" name="category" id="form-control"
+                    style=" margin-left: 8% ;height: 37px; margin-top: 20px;" value="{{updatecat.name}}">
+                <input type="submit" name="Update category id=" btn btn-info mt-2" class="btn btn-outline-success"
+                    style="margin-bottom: 5px;">
+                <a href="{{url_for('categories')}}" class="btn btn-outline-danger" style="margin-bottom: 5px;"">Cancel</a>
+
+            </form>
+
+            {% endif %}
+
+        </div>
+        <div class=" col-md-3">
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

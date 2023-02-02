@@ -1,0 +1,232 @@
+{% extends 'layout.html'%}
+
+{% block content %}
+
+{% include '_messages.html'%}
+{% include 'navbar.html' %}
+
+<script>
+    function getMaxBrand() {
+
+        var max_brand = 0;
+        {% for brand in brands %}
+
+        max_brand = Math.max(max_brand, {{ brand.id | int }})
+    {% endfor %}
+
+
+    return max_brand;
+    }
+
+    function getMaxCategory() {
+
+        var max_category = 0;
+        {% for category in categories %}
+
+        max_category = Math.max(max_category, {{ category.id | int }})
+    {% endfor %}
+
+    return max_category;
+    }
+
+    async function editProductWorkFlow(product_id, price, stock, discount, is_nft, blob_image) {
+        const contract_abi = {{ contract_info['abi'] | tojson
+    }}
+    const contract_address = "{{contract_info['address']}}";
+
+
+    var formData = new FormData()
+
+    formData.append("id", product_id)
+    formData.append("blob", blob_image)
+
+    if (is_nft == true)
+        await $.ajax({
+            //split(";")[0].split(":")[1]
+            url: "/temporary/",
+            type: "POST",
+            data: formData,
+            contentType: false,
+            cache: true,
+            processData: false,
+        });
+
+
+    console.log("Before get contarct")
+    walletWrapper.setupContract(contract_abi, contract_address)
+    console.log("after get contract")
+    const account = await walletWrapper.retrieveAccountInfo()
+
+
+    var imageHash = ""
+
+
+
+    await walletWrapper.editProduct(
+        product_id,
+        price,
+        stock,
+        discount,
+        is_nft,
+        blob_image.split("base64,")[1],
+        {
+            from: account
+            //gas: 6721975
+        })
+
+    console.log("EditProduct Done")
+    $("#image_blob").val(blob_image)
+    console.log(blob_image)
+    $("#editproductsubmit").submit()
+    return "ok";
+    }
+
+    function editProduct(image_blob) {
+        const max_brand = getMaxBrand();
+        const max_category = getMaxCategory();
+
+
+        try {
+            const product_id = "{{product.product_id | string}}"
+
+            const price = parseFloat($("#price").val())
+            const stock = parseInt($("#stock").val())
+
+            const discount = parseInt($("#discount").val())
+            const category = parseInt($("#category").val())
+            const brand = parseInt($("#brand").val())
+            const is_nft = {{ product.is_nft| string | lower
+        }};
+
+    if ($("#name").val() === "" || $("#name").val() == null)
+        throw new Error("Invalid name")
+
+    if (isNaN(price) || price < 0)
+        throw new Error("Invalid price")
+
+    if (isNaN(discount) || discount > 100 || discount < 0)
+        throw new Error("Invalid discount")
+
+    if (isNaN(stock) || stock < 0)
+        throw new Error("Invalid stock")
+
+    if (isNaN(brand) || brand < 0 || brand > max_brand)
+        throw new Error("Invalid brand")
+
+    if (isNaN(category) || category < 0 || category > max_category)
+        throw new Error("Invalid category")
+
+    if ($("#description").val() === "" || $("#description").val() == null)
+        throw new Error("Invalid description")
+
+    console.log("id [" + (typeof product_id) + "] -> " + product_id)
+    console.log("id [" + (typeof price) + "] -> " + price)
+    console.log("id [" + (typeof stock) + "] -> " + stock)
+    if (stock != 0 || confirm("NFT has stock 0. It will be created however it's not for sale.\nContinue?"))
+        editProductWorkFlow(product_id, price, stock, discount, is_nft, image_blob)
+            .then(ok => {
+                //console.log("saitama approved")
+                global_blob = ""
+            })
+            .catch(error => {
+                global_blob = ""
+                message = getMetamaskError(error.message)
+
+                $("#flashbox").attr("class", "alert alert-danger")
+                $("#flashbox").text(message)
+                window.scrollTo(0, 0)
+            })
+        }
+        catch (error) {
+        console.log(error)
+        $("#flashbox").attr("class", "alert alert-danger")
+        $("#flashbox").text(error)
+        window.scrollTo(0, 0)
+    }
+
+    }
+    var global_blob = ""
+
+    /*
+    document.onreadystatechange = () => {
+        if (document.readyState === 'complete') {
+            document.getElementById("edit_button").addEventListener("click", event => {
+                editProduct(global_blob)
+            })
+        }
+    };
+    */
+
+</script>
+<div class="container">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <h2 class="text-center bg-dark p-2" style="color: #ffff; border-radius: 5px; margin-top: 5px;">Update a
+                product
+            </h2>
+            {% from "_formhelpers.html" import render_field %}
+            <form id="editproductsubmit" name="editproductsubmit" action="" method="POST" enctype="multipart/form-data">
+
+                {{ render_field(form.name, class='form-control', placeholder='Add product name') }}
+                {{ render_field(form.price, class='form-control', placeholder='Add product price') }}
+                {{ render_field(form.discount, class='form-control', placeholder='Add product discount') }}
+                {{ render_field(form.stock, class='form-control', placeholder='Add product stock') }}
+                <label for="brand">Add a brand</label>
+                <select name="brand" id="brand" class="form-control" required>
+                    <option value="{{product.brand_id}}">{{product.brand.name}}</option>
+                    {% for brand in brands %}
+                    <option value="{{brand.id}}">{{brand.name}}</option>
+                    {% endfor %}
+                </select>
+
+
+
+                <label for="category">Add a category</label>
+                <select name="category" id="category" class="form-control" required>
+                    <option value="{{product.category_id}}">{{product.category.name}}</option>
+                    {% for category in categories %}
+                    <option value="{{category.id}}">{{category.name}}</option>
+                    {% endfor %}
+                </select>
+
+                {{ render_field(form.description, class='form-control', placeholder='Add product description',
+                rows='10') }}
+
+                <div class="container">
+                    <div class="row">
+                        <div class="col-auto .mr-auto">{{ render_field(form.image_1, class='form-control')}}</div>
+                        <div class="col-auto .mr-auto">{{ render_field(form.image_2, class='form-control')}}</div>
+                        <div class="col-auto .mr-auto">{{ render_field(form.image_3, class='form-control')}}</div>
+                    </div>
+                </div>
+
+                <script>
+                    document.getElementById("image_1").addEventListener("change", event => {
+                        const file = event.target.files[0]
+                        reader = new FileReader()
+                        reader.addEventListener("load", eventLoad => {
+                            global_blob = eventLoad.target.result//.split("base64,")[1]
+                        })
+
+                        try {
+                            reader.readAsDataURL(file)
+                        }
+                        catch (error) {
+                            global_blob = ""
+                        }
+
+                    })
+                </script>
+                <input type="hidden" name="image_blob" id="image_blob" value="">
+                <button id="edit_button" name="edit_button" type="button" class="btn btn-outline-success"
+                    style="margin-left: 15px; margin-top: 15px;" onclick="editProduct(global_blob)">Update
+                    product</button>
+
+            </form>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+{% include '_messages.html' %}
+
+
+<div class="container">
+    <div class="row">
+        <h1 style="margin-left: 35%; margin-top: 5%; font-family: cursive; text-shadow: 0px 3px 2px grey;"> Your cart
+            is empty.</h1>
+        <img src="{{url_for('static', filename='images/site-images/clear-cart.png')}}" alt="Clear Cart" width='300'
+            height='300' style="margin-left: 36%; margin-top: 5%;">
+    </div>
+    <div>
+        <td>
+            <a href="{{url_for('home')}}" class="btn btn-sm btn-info"
+                style="box-shadow: 0px 3px 3px rgb(107, 107, 107); margin-left: 45% ; margin-top: 5%;">
+                Back to shopping
+            </a>
+        </td>
+        <td width="30%"></td>
+    </div>
+</div>
+{% endblock content %}

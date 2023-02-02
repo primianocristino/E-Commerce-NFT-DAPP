@@ -1,0 +1,99 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            {% include '_messages.html' %}
+            Invoice: {{orders.invoice}}
+            <br>
+            Customer name: {{customer.name}}
+            <br>
+            Customer email: {{customer.email}}
+            <br>
+            Customer contact: {{customer.contact}}
+            <br>
+            <br>
+            <table class="table table-sm table-hover">
+                <thead>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Image</th>
+                    <th>Price</th>
+                    <th>Qnt</th>
+                    <th>NFT</th>
+                    <th>-%</th>
+                    <th>Discount</th>
+                    <th>Subtotal</th>
+                    <th>Status</th>
+
+                </thead>
+                <tbody>
+
+                    {% for key, product in orders.orders.items() %}
+
+                    {% set discount = "%0.2f" | format((product.discount/100) * product.price|float) %}
+
+                    <tr>
+
+                        <td>{{loop.index}}</td>
+
+
+                        <td><a href="{{url_for('get_product',id=product.product_id)}}" class="btn btn-sm btn-info"
+                                method="GET" type="submit"
+                                style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">{{product.name}}</a>
+                        </td>
+                        <td><img src="{{url_for('static', filename='images/' + product.image_1)}}" width="35"
+                                height="40">
+                        </td>
+
+                        <td class="trailing">ETH {{"%.8f"|format(product.price)}}</td>
+                        <td>
+                            {{ product.quantity }}
+                        </td>
+
+                        <td>
+                            {% if product.is_nft %}
+                            {{product.is_nft}}
+                            {% endif %}
+
+                        </td>
+                        {% if product.discount >= 0 %}
+
+                        <td>-{{product.discount}}%</td>
+                        <td class="trailing">-ETH {{discount}}</td>
+
+                        {% else %}
+                        <td></td>
+                        {% endif %}
+
+                        {% set subtotal = product.quantity|int * product.price|float %}
+
+                        <td class="trailing">ETH {{"%0.8f"|format((subtotal|float) - discount|float)}}</td>
+                        <td>{{product.status}}</td>
+
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table class="table table-sm">
+                <tr>
+                    <td><a href="{{url_for('all_orders')}}" class="btn btn-sm btn-success"
+                            style="box-shadow: 0px 3px 3px rgb(107, 107, 107);">Checkout</a></td>
+                    <td width="30%"></td>
+
+                    <td colspan="3">
+                        <h4 class="trailing" style="color: rgb(3, 117, 3); margin-left: 20%;
+                 text-shadow: 0px 1px 2px rgb(110, 110, 110);">Total: ETH {{"%0.8f"|format(grandTotal)}}</h4>
+                    </td>
+
+                </tr>
+            </table>
+
+        </div>
+    </div>
+</div>
+{% include 'footer.html' %}
+
+{% endblock content %}
