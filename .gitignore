@@ -130,6 +130,7 @@ dmypy.json
 
 src/contracts/.deps
 src/contracts/artifacts
-
+utils/admin_info.json
+utils/test_accounts.json
 utils/ganache_start.txt
 .vscode/
