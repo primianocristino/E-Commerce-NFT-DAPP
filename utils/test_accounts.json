@@ -1,4 +1,4 @@
 {
-    "<buyer address>": "0x<buyer private key>",
-    "<seller address>": "0x<seller private key>",
+    "<buyer address>": "",
+    "<seller address>": ""
 }
