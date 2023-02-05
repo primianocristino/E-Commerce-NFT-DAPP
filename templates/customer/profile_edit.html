@@ -4,7 +4,38 @@
 
 {% include 'navbar.html' %}
 {% include '_messages.html' %}
+<script>
 
+    async function checkApproval() {
+        current_status = $("#conditionTerms").is(':checked')
+
+        if (current_status != term_status) {
+            await conditionTerms(current_status)
+            term_status = current_status
+        }
+    }
+
+    async function initalCheck() {
+        console.log(document.readyState)
+        if (document.readyState === 'complete') {
+            console.log("here")
+            term_status = await getApproved()
+            $("#conditionTerms").prop('checked', term_status);
+            console.log("PREVIOUS STATUS: ", term_status)
+            $("#conditionTerms").on("click", checkApproval)
+        }
+    }
+
+    document.onreadystatechange = initalCheck;
+    var term_status = null
+
+    const contract_abi = {{ contract_info['abi'] | tojson}};
+    const contract_address = "{{contract_info['address']}}";
+
+    const token_nft_abi = {{ token_nft_info['abi'] | tojson}};
+    const token_nft_address = "{{token_nft_info['address']}}";
+
+</script>
 <div class="container">
     {% from "_formhelpers.html" import render_field %}
 
@@ -78,6 +109,9 @@
                 </tr>
                 <tr>
                     <td>{{ render_field(form.zipcode, class='form-control', value=user_data.zipcode) }}</td>
+                </tr>
+                <tr>
+                    <td>{{ render_field(form.conditionTerms, class='form-control', value='') }}</td>
                 </tr>
                 <tr>
                     <td>{{ form.submit(class="btn btn-success", style="float:left;" ) }}

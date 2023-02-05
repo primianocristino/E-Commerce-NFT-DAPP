@@ -167,6 +167,10 @@ class MetaMaskWrapper{
         return this.contract.methods.deleteProduct(id).send(tx_dict)
     }
 
+    async isDexApproved(tx_dict){
+        return this.token_nft.methods.isApprovedForAll(tx_dict["from"], this.contract_address).call(tx_dict)
+    }
+
     async deposit(tx_dict){
 
         if(typeof tx_dict["value"] != "bigint")
@@ -218,8 +222,8 @@ class MetaMaskWrapper{
         return this.contract.methods.buyProducts(ids, amounts).send(tx_dict)
     }
 
-    conditionTerms(tx_dict){
-        return this.token_nft.methods.setApprovalForAll(this.contract_address, true).send(tx_dict)
+    conditionTerms(status, tx_dict){
+        return this.token_nft.methods.setApprovalForAll(this.contract_address, status).send(tx_dict)
     }
 
 }

@@ -56,7 +56,7 @@
                 <script>
                     $("#conditionTerms-0").on("click", function () {
                         if ($("#conditionTerms-0").is(":checked") == true)
-                            conditionTerms()
+                            conditionTerms(true)
                                 .then(account => {
                                     $("#registerAccount").val("" + account)
                                 })

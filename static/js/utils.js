@@ -26,6 +26,16 @@ function adjustBalance(balance) {
     return real_balance
 }
 
+async function getApproved(){
+    console.log("Before get contarct")
+    walletWrapper.setupContract(contract_abi, contract_address)
+    walletWrapper.setupTokenNft(token_nft_abi, token_nft_address)
+    console.log("After get contract")
+    account = await walletWrapper.retrieveAccountInfo()
+
+    return walletWrapper.isDexApproved({from: account})
+}
+
 async function moneyWorkFlow(type) {
     console.log("My TYPE IS: ", type)
     console.log("Before get contarct")
@@ -183,15 +193,16 @@ function currentSupply() {
         })
 }
 
-async function conditionTerms(){
+async function conditionTerms(status){
     console.log("Before get contarct")
     walletWrapper.setupContract(contract_abi, contract_address)
     walletWrapper.setupTokenNft(token_nft_abi, token_nft_address)
     console.log("after get contract")
     account = await walletWrapper.retrieveAccountInfo()
-    await walletWrapper.conditionTerms({
-        from: account
-    })
+    await walletWrapper.conditionTerms(
+        status,
+        {from: account}
+    )
     return account
 }
 

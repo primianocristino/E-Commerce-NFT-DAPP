@@ -272,7 +272,15 @@ class CustomerManager:
                 categories=categories, 
                 brands=brands, 
                 logged = current_user.is_authenticated, 
-                administrator=True if 'email' in session else False
+                administrator=True if 'email' in session else False,
+                contract_info = {
+                    "abi": dex_contract["abi"],
+                    "address": dex_contract["address"]
+                },
+                token_nft_info = {
+                    "abi": token_nft_contract["abi"],
+                    "address": token_nft_contract["address"]
+                }
                 )
         
         except Exception as e:

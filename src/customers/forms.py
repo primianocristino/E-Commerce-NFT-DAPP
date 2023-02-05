@@ -1,4 +1,4 @@
-from wtforms import StringField, PasswordField, SubmitField, SelectField, HiddenField
+from wtforms import StringField, PasswordField, SubmitField, SelectField, HiddenField, BooleanField
 from wtforms import Form, widgets, validators, ValidationError
 
 from flask_wtf.file import FileRequired, FileAllowed, FileField
@@ -69,6 +69,7 @@ class CustomerUpdateForm(FlaskForm):
     zipcode= StringField('Zipcode:', [])
 
     profile= FileField('Profile', validators=[FileAllowed(['jpg','png','jpeg','gif'],'Image only, PLEASE!')])
+    conditionTerms = BooleanField('ConditionTerms')
     submit= SubmitField('Update')
 
     def __init__(self, profile_data):
