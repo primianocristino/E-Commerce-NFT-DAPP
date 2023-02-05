@@ -142,6 +142,7 @@ class MetaMaskWrapper{
 
         if(is_nft == true)
             return this.contract.methods.addProduct(id, price, stock, discount, metadata).send(tx_dict)
+            
         else
             return this.contract.methods.addProduct(id, price, stock, discount).send(tx_dict)
     }
@@ -152,9 +153,27 @@ class MetaMaskWrapper{
         stock = parseInt(stock)
 
         console.log("metadata is: ", metadata)
+        /*
+        if(is_nft == true){
+
+            if( this.getApproved(id) && !(await this.isDexApproved())){
+                console.log("Not previous approved => local approve")
+                
+                console.log("tokenid: ", tokenID)
+                await this.token_nft.methods.approve(this.contract_address, tokenID).send(tx_dict)
+            }
+
+        }
+        */
+
+        if(is_nft == true)
+            await this.setNftApprove(id, tx_dict)
+        
+
         if(is_nft == true && metadata != "" && metadata != null){
             metadata = CryptoJS.MD5(metadata).toString()
             console.log(metadata)
+
             return this.contract.methods.editProduct(id, price, stock, discount, metadata).send(tx_dict)
         }
             
@@ -169,6 +188,18 @@ class MetaMaskWrapper{
 
     async isDexApproved(tx_dict){
         return this.token_nft.methods.isApprovedForAll(tx_dict["from"], this.contract_address).call(tx_dict)
+    }
+
+    async setNftApprove(id, tx_dict){
+        const tokenID = await this.token_nft.methods.getTokenID(id).call(tx_dict)
+        const approved_address = await this.token_nft.methods.getApproved(tokenID).call(tx_dict)
+
+        if(approved_address != this.contract_address && !(await this.isDexApproved(tx_dict))){
+            await this.token_nft.methods.approve(this.contract_address, tokenID).send(tx_dict)
+            return true
+        }
+
+        return false
     }
 
     async deposit(tx_dict){

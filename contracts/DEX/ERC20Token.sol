@@ -40,7 +40,7 @@ contract ERC20Token is ERC20, IERC20Token {
         returns (bool)
     {
         address owner = msg.sender;
-        require(owner != address(this), "dio cane");
+        require(owner != address(this), "Invalid caller");
         uint256 current_allowance = allowance(owner, spender);
         if (addedValue > current_allowance)
             return increaseAllowance(spender, addedValue - current_allowance);

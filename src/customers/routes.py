@@ -72,49 +72,49 @@ class CustomerManager:
 
                 # accountAddress = request.form.get('registerAccount')
 
-                accountAddress = form.registerAccount.data
-                accountAddress = dex_instance["value"].Web3.toChecksumAddress(accountAddress)
+                # accountAddress = form.registerAccount.data
+                # accountAddress = dex_instance["value"].Web3.toChecksumAddress(accountAddress)
 
-                approved = dex_instance["value"].token_nft.isApprovedForAll(accountAddress, dex_contract["address"])
+                # approved = dex_instance["value"].token_nft.isApprovedForAll(accountAddress, dex_contract["address"])
 
-                if not approved:
-                    catch_error_message = f"ConditionTerms are not approved"
-                    raise Exception("ConditionTerms are not approved")
-                else:
-                    # print()
-                    # print("COSA HA SCELTO??")
-                    # print(form.conditionTerms.data)
-                    # print()
-                    # return redirect(url_for('customer_login'))
-                    hash_password= bcrypt.generate_password_hash(form.password.data)
-                    image_profile = form.profile.data
-                    try:
-                        if image_profile.filename != "":
-                            hash_raw_name = bcrypt.generate_password_hash(image_profile.filename).decode("utf-8")
-                            hash_profile_image = secure_filename(hash_raw_name)
-                            filename= os.path.join("customer_profile",""+hash_profile_image + '.')
-                            image_profile=photos.save(image_profile, name=filename)
-                        else:
-                            image_profile = None
-                    except:
+                # if not approved:
+                #     catch_error_message = f"ConditionTerms are not approved"
+                #     raise Exception("ConditionTerms are not approved")
+                # if True: # else:
+                # print()
+                # print("COSA HA SCELTO??")
+                # print(form.conditionTerms.data)
+                # print()
+                # return redirect(url_for('customer_login'))
+                hash_password= bcrypt.generate_password_hash(form.password.data)
+                image_profile = form.profile.data
+                try:
+                    if image_profile.filename != "":
+                        hash_raw_name = bcrypt.generate_password_hash(image_profile.filename).decode("utf-8")
+                        hash_profile_image = secure_filename(hash_raw_name)
+                        filename= os.path.join("customer_profile",""+hash_profile_image + '.')
+                        image_profile=photos.save(image_profile, name=filename)
+                    else:
                         image_profile = None
-                    
-                    register= Register(
-                        name=form.name.data, 
-                        username=form.username.data,
-                        email=form.email.data, 
-                        password=hash_password, 
-                        country=form.country.data,
-                        city=form.city.data, 
-                        address=form.address.data, 
-                        contact=form.contact.data,
-                        zipcode=form.zipcode.data, 
-                        profile = image_profile
-                    )
-                    db.session.add(register)
-                    flash(f'Welcome {form.name.data}. Thank you for registering!','success')
-                    db.session.commit()
-                    return redirect(url_for('customer_login'))
+                except:
+                    image_profile = None
+                
+                register= Register(
+                    name=form.name.data, 
+                    username=form.username.data,
+                    email=form.email.data, 
+                    password=hash_password, 
+                    country=form.country.data,
+                    city=form.city.data, 
+                    address=form.address.data, 
+                    contact=form.contact.data,
+                    zipcode=form.zipcode.data, 
+                    profile = image_profile
+                )
+                db.session.add(register)
+                flash(f'Welcome {form.name.data}. Thank you for registering!','success')
+                db.session.commit()
+                return redirect(url_for('customer_login'))
 
             return render_template(
                 'customer/register.html', 

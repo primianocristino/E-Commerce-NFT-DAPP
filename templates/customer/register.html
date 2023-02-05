@@ -10,6 +10,30 @@
 </style>
 
 <script>
+
+    async function checkApproval() {
+        current_status = $("#conditionTerms").is(':checked')
+
+        if (current_status != term_status) {
+            await conditionTerms(current_status)
+            term_status = current_status
+        }
+    }
+
+    async function initalCheck() {
+        console.log(document.readyState)
+        if (document.readyState === 'complete') {
+            console.log("here")
+            term_status = await getApproved()
+            $("#conditionTerms").prop('checked', term_status);
+            console.log("PREVIOUS STATUS: ", term_status)
+            $("#conditionTerms").on("click", checkApproval)
+        }
+    }
+
+    document.onreadystatechange = initalCheck;
+    var term_status = null
+
     const contract_abi = {{ contract_info['abi'] | tojson}};
     const contract_address = "{{contract_info['address']}}";
 
@@ -53,6 +77,7 @@
 
 
                 {{ form.submit(id="test", class="btn btn-success") }}
+                <!--
                 <script>
                     $("#conditionTerms-0").on("click", function () {
                         if ($("#conditionTerms-0").is(":checked") == true)
@@ -68,7 +93,7 @@
                                     window.scrollTo(0, 0)
                                 })
                     });
-                </script>
+                </script> -->
 
             </div>
             <div class="col-md-2"></div>

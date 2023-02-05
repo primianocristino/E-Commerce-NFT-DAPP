@@ -7,7 +7,7 @@ from .models import Brand, Category, AddProduct
 from .forms import Addproducts
 from src.customers import Register
 from utils import db, photos
-from utils import dex_contract, dex_instance, tmp_nft, image_complete_path
+from utils import dex_contract, dex_instance, tmp_nft, image_complete_path, token_nft_contract
 
 import traceback
 import secrets, os, hashlib
@@ -483,6 +483,10 @@ class ProductManager:
                 contract_info = {
                     "abi": dex_contract["abi"],
                     "address": dex_contract["address"]
+                },
+                token_nft_info = {
+                    "abi": token_nft_contract["abi"],
+                    "address": token_nft_contract["address"]
                 }
             )
 

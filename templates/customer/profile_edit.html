@@ -111,7 +111,9 @@
                     <td>{{ render_field(form.zipcode, class='form-control', value=user_data.zipcode) }}</td>
                 </tr>
                 <tr>
-                    <td>{{ render_field(form.conditionTerms, class='form-control', value='') }}</td>
+                    <td>{{ render_field(form.conditionTerms, class='form-control', value='') }}
+                        <p>Allow the application to manage all of your ERC721-NFT.</p>
+                    </td>
                 </tr>
                 <tr>
                     <td>{{ form.submit(class="btn btn-success", style="float:left;" ) }}

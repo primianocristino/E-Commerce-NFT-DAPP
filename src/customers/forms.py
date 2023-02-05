@@ -37,7 +37,8 @@ class CustomerRegisterForm(FlaskForm):
 
     profile= FileField('Profile', validators=[FileAllowed(['jpg','png','jpeg','gif'],'Image only, PLEASE!')])
 
-    conditionTerms = MultiCheckboxField('ConditionTerms', coerce=bool,choices=[(True,"Agree")])
+    # conditionTerms = MultiCheckboxField('ConditionTerms', coerce=bool,choices=[(True,"Agree")])
+    conditionTerms = BooleanField('ConditionTerms')
     registerAccount = HiddenField("")
     submit= SubmitField('Register')
 
