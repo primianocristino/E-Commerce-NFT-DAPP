@@ -249,6 +249,11 @@ class CustomerManager:
                     user_data.contact = form.contact.data
                     user_data.zipcode = form.zipcode.data
                     user_data.profile = image_profile
+
+                    products = AddProduct.query.filter_by(owner_email=old_email).all()
+
+                    for product in products:
+                        product.owner_email = user_data.email
                     
                     db.session.commit()
 
